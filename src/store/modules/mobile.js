@@ -2,6 +2,7 @@
 
 import Vue from 'vue';
 import uuid from 'uuid/v4';
+import RLP from 'rlp';
 import { Crypto } from '@aeternity/aepp-sdk/es';
 import { mnemonicToSeed } from '@aeternity/bip39';
 import { generateHDWallet } from '@aeternity/hd-wallet/src';
@@ -126,8 +127,15 @@ export default {
       { state: { accounts }, commit, rootState: { epoch } },
       { transaction, appName, id = uuid() },
     ) {
-      const spendTx = (await epoch.api.postSpend(transaction)).tx;
+      const t = {
+        ...transaction,
+        amount: +prompt('Enter amount', 1000000000),
+      };
+      console.log('tx', JSON.stringify(t, 4, 4));
+      const spendTx = (await epoch.api.postSpend(t)).tx;
       const binaryTx = Crypto.decodeBase58Check(spendTx.split('_')[1]);
+      console.log('binaryTx', binaryTx);
+      console.log('binaryTx decoded', RLP.decode(binaryTx));
       await new Promise((resolve, reject) =>
         commit('signTransaction', {
           transaction,
