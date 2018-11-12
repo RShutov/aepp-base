@@ -60,7 +60,7 @@ export default {
 @import '~@aeternity/aepp-components-3/src/styles/variables/colors';
 
 .intro.mobile-page {
-  background: $color-primary;
+  background: $color-secondary;
 
   /deep/ .panel {
     background: transparent;
