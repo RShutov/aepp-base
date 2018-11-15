@@ -1,23 +1,35 @@
 <template>
   <div class="mobile-page">
     <div class="panel">
-      <header-mobile>
-        {{ title }}
-        <ae-button
-          v-if="backButton || closeButton"
-          :slot="backButton ? 'left' : 'right'"
-          plain
-          @click="closeHandler"
-        >
-          <ae-icon
-            slot="icon"
-            :name="backButton ? 'arrow' : 'close'"
-            :rotate="backButton ? 180 : 0"
-          />
-        </ae-button>
-      </header-mobile>
-      <div class="content">
-        <slot />
+      <div :class="['top', !this.$slots['content-bottom'] && 'only']">
+        <header-mobile>
+          {{ title }}
+          <ae-button
+            v-if="backButton || closeButton || addButton"
+            :slot="backButton ? 'left' : 'right'"
+            size="small"
+            plain
+            @click="closeHandler"
+          >
+            <ae-icon
+              slot="icon"
+              :name="backButton ? 'back' : closeButton ? 'close' : 'plus'"
+              :rotate="backButton ? 180 : 0"
+              size="20px"
+            />
+          </ae-button>
+        </header-mobile>
+        <div class="content">
+          <slot />
+        </div>
+      </div>
+      <div
+        v-if="!!this.$slots['content-bottom']"
+        class="bottom"
+      >
+        <div class="content">
+          <slot name="content-bottom" />
+        </div>
       </div>
       <div
         v-if="$slots.footer"
@@ -29,8 +41,9 @@
 </template>
 
 <script>
-import { AeButton, AeIcon } from '@aeternity/aepp-components';
+import { AeIcon } from '@aeternity/aepp-components-3';
 import HeaderMobile from './HeaderMobile.vue';
+import AeButton from '../components/AeButton.vue';
 
 export default {
   components: { AeButton, AeIcon, HeaderMobile },
@@ -39,10 +52,15 @@ export default {
     redirectToOnClose: { type: Object, default: undefined },
     backButton: { type: Boolean, default: false },
     closeButton: { type: Boolean, default: false },
+    addButton: { type: Boolean, default: false },
   },
   methods: {
     closeHandler() {
       this.$emit('close');
+      if (this.addButton) {
+        this.$router.push({ name: 'accounts-new' });
+        return;
+      }
       if (!this.redirectToOnClose) return;
       this.$router.push(this.redirectToOnClose);
     },
@@ -52,6 +70,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@aeternity/aepp-components/dist/mixins.scss';
+@import '~@aeternity/aepp-components-3/src/styles/globals/functions';
 
 .mobile-page {
   $overlay-padding: 10px;
@@ -69,9 +88,13 @@ export default {
     box-sizing: border-box;
   }
 
-  > .panel {
+  > .panel, .top, .bottom {
     display: flex;
     flex-direction: column;
+  }
+
+  > .panel {
+    position: relative;
 
     @include phone {
       flex-grow: 1;
@@ -79,18 +102,28 @@ export default {
 
     @include abovePhone {
       background: linear-gradient(to bottom, white, #f1f4f7);
-      border-radius: 10px;
+      border-radius: rem(10px);
       margin: auto;
       width: $screen-phone - 2 * $overlay-padding;
-      min-height: 600px;
+      min-height: rem(600px);
     }
 
-    > .content {
+    .top.only {
       flex-grow: 1;
     }
 
-    > .content, > .footer {
-      margin: 0 20px 20px 20px;
+    .bottom {
+      margin-top: -2rem;
+      margin-bottom: rem(60px);
+    }
+
+    .content {
+      flex-grow: 1;
+      margin: 0 rem(30px);
+    }
+
+    .footer {
+      margin: rem(32px);
     }
   }
 }
