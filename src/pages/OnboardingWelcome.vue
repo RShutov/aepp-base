@@ -20,5 +20,3 @@ export default {
   components: { Guide },
 };
 </script>
-
-<style lang="scss" src="./OnboardingScreen.scss" scoped>

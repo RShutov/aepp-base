@@ -20,7 +20,6 @@ export default {
 };
 </script>
 
-<style lang="scss" src="./OnboardingScreen.scss" scoped />
 <style lang="scss" scoped>
 .onboarding-screen img {
   width: 190px;
